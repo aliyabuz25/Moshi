@@ -1,56 +1,63 @@
-<<<<<<< HEAD
-# Moshi
-=======
-# Moshi IDE: Federated Learning Ecosystem for Elite Code Synthesis
+# Moshi: The Story of a Decentralized Coding Brain
 
-Moshi IDE is not merely a development environment; it is a distributed, state-aware neural engine designed to bridge the gap between local specialized training and global collective intelligence. By leveraging **Edge-Based Autonomous Learning**, Moshi turns every developer's workspace into a contributor to a "Universal Coding Brain."
+Moshi started with a simple question: *What if our IDEs didn't just suggest code, but actually learned the "soul" of every project they touched?*
 
-## 🏛 Architecture & Philosophy
+Most AI coding assistants feel like black boxes—disconnected, gargantuan models that eat your data and give back generic templates. Moshi is different. It’s a decentralized, state-aware neural engine that lives on your machine, learns from your unique syntax, and contributes back to a global collective intelligence.
 
-The project is built upon a **Syntax-First Composition Engine**. Unlike traditional LLMs that rely on static token memorization, Moshi focuses on the atomic grammar of code—HTML5 structures, CSS3 layout logic, and Modern JavaScript patterns—to synthesize semantically sound code on demand.
+## � How Moshi "Thinks"
 
-### Technical Core
-- **Distributed Weight Synchronization:** Implements a Git-based federated sync hub to merge local dataset expansions into the central repository.
-- **Autonomous Training Loop:** A background engine that performs continuous self-supervised learning on high-quality code patterns generated during user sessions.
-- **Low-Latency Inference:** Optimized for high-performance CPU execution with a tailored context window and deterministic sampling parameters.
+At its core, Moshi isn't memorizing your files. It’s analyzing the **atomic grammar** of your project—the way you nest your HTML, the specific animations you prefer in CSS, and the async patterns you use in JS.
 
-## 🚀 Key Features
-
-- **Global Brain Sync:** Synchronize local training insights with the central [Moshi Repository](https://github.com/aliyabuz25/Moshi) using the integrated **Sync Hub**.
-- **Minimalist Aesthetic:** A high-end charcoal-palette UI inspired by modern engineering tools, featuring a custom **Monaco Editor** theme and zero-distraction layout.
-- **Live Performance Telemetry:** Real-time token processing metrics and training status indicators provided via a low-overhead REST API.
-- **Auto-Expansion Dataset:** Every meaningful generation is automatically validated and appended to the local knowledge base, ensuring the model evolves with your specific coding style.
-
-## 🛠 Setup & High-Performance Execution
-
-### Prerequisites
-- **Python 3.10+**
-- **PyTorch** (LTS recommended)
-- **Flask & Flask-CORS**
-- **Git** (Required for federated synchronization)
-
-### Initializing the Engine
-```bash
-# Clone the repository
-git clone https://github.com/aliyabuz25/Moshi.git
-cd Moshi
-
-# Warm up the brain and start the autonomous loop
-python3 server.py
+### The Neural Flow
+```mermaid
+graph TD
+    A[User Prompt] --> B{Tokenizer}
+    B -->|Char-Level Embedding| C[Positional Encoding]
+    C --> D[Moshi Transformer Blocks]
+    D -->|Self-Attention| E[Syntax Synthesis]
+    E --> F[VFS Injection]
+    F --> G[Code Execution]
 ```
 
-## 🧠 The Collaborative Vision
+### The "Global Brain" Synchronization
+Moshi uses a federated learning approach. Every time it helps you solve a problem, it appends that new pattern to its local memory. When you sync, your machine votes on the future of the global model.
 
-Moshi operates on a **Public-Contribution Model**. When you trigger a `Global Sync`, the following high-level operations occur:
-1. **Local Contribution:** Your local training gains (`datas/dataset.txt`) are merged into the staging area.
-2. **Global Integration:** The central hub validates and merges contributions from all active nodes.
-3. **Universal Pull:** The latest, most refined model weights (`moshi_brain.pt`) are distributed back to your IDE.
+```mermaid
+graph LR
+    UserA[Node 1] -- "Local Weights" --> GitHub((Central Hub))
+    UserB[Node 2] -- "Local Weights" --> GitHub
+    UserC[Node 3] -- "Local Weights" --> GitHub
+    GitHub -- "Elite Global Brain" --> UserA
+    GitHub -- "Elite Global Brain" --> UserB
+    GitHub -- "Elite Global Brain" --> UserC
+```
 
-## 📜 License & Community
+## 🛠 Tech Stack (For the Curious)
 
-Moshi is an open-source initiative dedicated to democratizing specialized AI code synthesis. Contributions to the core model architecture and dataset composition are highly encouraged.
+- **Back-end:** Python 3.10+ / Flask / PyTorch
+- **Visuals:** Inter & JetBrains Mono / Custom Monaco Theme
+- **Sync Engine:** Git-based Federated Learning Hub
+- **Syntax Engine:** Character-level Transformer with logic-based prompt mapping.
+
+## � Getting Started
+
+If you're reading this, you're likely here to build something smarter. To get the engines running:
+
+1. **Clone the Repo:**
+   ```bash
+   git clone https://github.com/aliyabuz25/Moshi.git
+   ```
+2. **Ignite the Brain:**
+   ```bash
+   python3 server.py
+   ```
+3. **The First Sync:**
+   Hit the **"Global Sync"** button in Moshi. This will pull the latest weights (`moshi_brain.pt`) and shared knowledge from the community.
+
+## � The Roadmap
+
+Moshi is an evolving organism. Our current focus is on **Edge-Optimization** (making it faster on every CPU) and **Zero-Shot Project Context** (understanding your whole codebase in a single blink).
 
 ---
-**Core Development:** Ali Yabuz & The Moshi Open-Source Community  
-**Repository:** [https://github.com/aliyabuz25/Moshi](https://github.com/aliyabuz25/Moshi)
->>>>>>> d248abd (Initial release: Moshi IDE Collaborative Intelligence Hub)
+**Build with us.**  
+[Github](https://github.com/aliyabuz25/Moshi) | **Moshi Community**
