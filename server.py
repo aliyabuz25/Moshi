@@ -55,42 +55,53 @@ def chat():
     user_message = data.get('message', '').lower()
     context = data.get('context', {})
     
-    response = {"message": "", "files": {}}
-
-    if "train" in user_message:
-        from moshi_ai import model
-        response["message"] = f"Self-learning is active. Current State: {model.training_status}"
+@app.route('/chat', methods=['POST'])
+def process_neural_query():
+    """Main entry point for Moshi-v1 synthesis queries."""
+    payload = request.json
+    raw_query = payload.get('message', '').lower()
+    input_context = payload.get('context', {})
     
-    elif any(cmd in user_message for cmd in ["generate", "code", "make", "create", "build", "explain", "fix", "refactor"]):
-        prompt = user_message.replace("moshi", "").replace("generate", "").replace("code", "").strip()
+    result_package = {"message": "", "files": {}}
+
+    # Handle internal command triggers
+    if "train" in raw_query:
+        from moshi_ai import model
+        result_package["message"] = f"Moshi Training Engine is hot. Current Flux: {model.training_status}"
+    
+    elif any(trigger in raw_query for trigger in ["generate", "code", "make", "create", "build", "explain", "fix", "refactor"]):
+        # Clean the intent from redundant markers
+        clean_intent = raw_query.replace("moshi", "").replace("generate", "").replace("code", "").strip()
         
-        # Inject Context if available
-        if context.get('content'):
-            prompt = f"Context file ({context['path']}):\n{context['content']}\n\nTask: {prompt}"
+        # Hydrate prompt with active file context if provided
+        if input_context.get('content'):
+            clean_intent = f"Ref: {input_context['path']}\nData: {input_context['content']}\n\nObjective: {clean_intent}"
             
-        if not prompt: prompt = "html base"
+        if not clean_intent: 
+            clean_intent = "boilerplate scaffolding"
         
         try:
             # The model now understands Prompts!
-            generated, tokens = generate_text(prompt)
-            response["tokens_used"] = tokens
+            synthesis, token_overhead = generate_text(clean_intent)
+            result_package["tokens_used"] = token_overhead
             
             # Auto-Learning: Append successful synthesis to local dataset
-            if len(generated) > 20: # Only learn meaningful code
+            # This is the core of the federated learning mechanism
+            if len(synthesis) > 20:
                 with open('datas/dataset.txt', 'a') as f:
-                    f.write(f"\n[PROMPT] {prompt} [CODE] {generated} [END]")
+                    f.write(f"\n[PROMPT] {clean_intent} [CODE] {synthesis} [END]")
 
-            # Ensure code is always wrapped for the new UI parser
-            if "<" in generated or "{" in generated or "body" in generated:
-                 response["message"] = f"Moshi-v1 Synthesis:\n```html\n{generated}\n```"
+            # Wrap synthesis for the frontend parser
+            if "<" in synthesis or "{" in synthesis or "body" in synthesis:
+                 result_package["message"] = f"Moshi-v1 Synthesis:\n```html\n{synthesis}\n```"
             else:
-                 response["message"] = f"Moshi-v1 Output: {generated}"
+                 result_package["message"] = f"Moshi-v1 Output: {synthesis}"
         except Exception as e:
-            response["message"] = f"Brain busy or syncing. Try again.\nError: {str(e)}"
+            result_package["message"] = f"Brain busy or syncing. Try again.\nSystem Log: {str(e)}"
     else:
-        response["message"] = "Moshi-v1 Autonomous Brain is active. Ask me to 'make something'."
+        result_package["message"] = "Moshi node is active. I'm ready for a synthesis objective."
 
-    return jsonify(response)
+    return jsonify(result_package)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, use_reloader=False) # Reloader off to prevent multiple threads
