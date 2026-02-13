@@ -12,13 +12,16 @@ class FileSystem {
 
     exists(path) { return this.files[path] !== undefined || this.folders[path] !== undefined || path === '/'; }
 
+    // Serializes content to the virtual disk and maintains folder hierarchy
     writeFile(path, content, handle = null) {
         this.files[path] = { content, handle };
-        const parts = path.split('/');
-        let current = '';
-        for (let i = 1; i < parts.length - 1; i++) {
-            current += '/' + parts[i];
-            this.folders[current] = true;
+
+        // Ensure parent directories exist (idempotent)
+        const pathSegments = path.split('/');
+        let currentPath = '';
+        for (let i = 1; i < pathSegments.length - 1; i++) {
+            currentPath += '/' + pathSegments[i];
+            this.folders[currentPath] = true;
         }
     }
 
@@ -172,33 +175,38 @@ const chatHistory = document.getElementById('chat-history');
 chatInput.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        const msg = chatInput.value.trim();
-        if (!msg) return;
-        appendMessage('User', msg);
-        chatInput.value = '';
-        const thinkingId = showThinking();
+        const userRequest = chatInput.value.trim();
+        if (!userRequest) return;
 
-        const contextFile = document.getElementById('ai-context-file').value;
-        let contextContent = "";
-        if (contextFile) {
-            contextContent = fs.readFile(contextFile) || "";
+        appendMessage('User', userRequest);
+        chatInput.value = '';
+        const sessionThreadId = showThinking();
+
+        // Inject active file context to help Moshi focus
+        const selectedContextPath = document.getElementById('ai-context-file').value;
+        let activeFileContent = "";
+
+        if (selectedContextPath) {
+            activeFileContent = fs.readFile(selectedContextPath) || "";
         }
 
         try {
-            const response = await fetch('http://localhost:5000/chat', {
+            const apiResponse = await fetch('http://localhost:5000/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: msg,
+                    message: userRequest,
                     context: {
-                        path: contextFile,
-                        content: contextContent
+                        path: selectedContextPath,
+                        content: activeFileContent
                     }
                 })
             });
-            if (!response.ok) throw new Error('Backend not reachable');
-            hideThinking(thinkingId);
-            const data = await response.json();
+
+            if (!apiResponse.ok) throw new Error('Cortex backend unreachable');
+
+            hideThinking(sessionThreadId);
+            const data = await apiResponse.json();
 
             if (data.tokens_used) {
                 appendMessage('System', `Used ${data.tokens_used} tokens for this reasoning.`, false, true);

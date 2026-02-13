@@ -1,10 +1,13 @@
-# Moshi: Federated Architecture for Multi-Head Syntax Synthesis
+# Moshi: A Federated Neural Engine for Modern Code Synthesis
 
-Moshi is a specialized, edge-optimized transformer ecosystem designed for **Autonomous Distributed Intelligence**. By implementing a federated synchronization protocol, Moshi transcends traditional IDE boundaries, transforming individual development environments into participating nodes of a global semantic network.
+Moshi isn't just another editor; it's a project I started to explore a decentralized future for AI. It's a character-level transformer trained to live on the edge, learning and evolving alongside you without the overhead of massive, disconnected cloud models.
 
-## 🏛 Architectural Formalism
+## 🏛 The Mission
 
-Moshi utilizes a **Decoder-Only Transformer** architecture optimized for character-level code synthesis. The core engine is defined by a sequence of $L$ identical blocks, each performing multi-head self-attention and non-linear transformations.
+The goal was to build a synthesis engine that understands **syntax grammar** rather than just memorizing templates. By utilizing a federated synchronization protocol, Moshi allows local development nodes to form a collective "Global Brain."
+
+### Why Another IDE?
+Most tools treat your code as static data. Moshi treats it as a living language. Every generation on your machine refine's its local weights, which you can then contribute back to the community via our Federated Integration Hub.
 
 ### 1. Neural Compute Flow
 The synthesis process follows a strictly causal sequence:

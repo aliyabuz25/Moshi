@@ -24,8 +24,11 @@ load_data('datas/dataset.txt')
 train_thread = threading.Thread(target=train_loop_autonomous, daemon=True)
 train_thread.start()
 
+# --- System Routes ---
+
 @app.route('/status', methods=['GET'])
-def get_status():
+def fetch_system_status():
+    """Returns engine health and synchronization state."""
     from moshi_ai import model
     return jsonify({
         "status": model.training_status,
@@ -34,14 +37,19 @@ def get_status():
     })
 
 @app.route('/ai/sync', methods=['POST'])
-def trigger_sync():
-    # 1. Contribute local data FIRST
+def handle_global_sync():
+    """Triggers federated learning synchronization hub."""
+    # 1. Dispatch local delta to upstream
     sync_manager.contribute_local()
-    # 2. Pull global updates
-    result = sync_manager.pull_global()
-    return jsonify({"message": "Global Sync Complete", "log": result})
+    
+    # 2. Pull global architecture refinements
+    sync_log = sync_manager.pull_global()
+    return jsonify({
+        "message": "Global Brain Synchronized",
+        "details": sync_log
+    })
 
-@app.route('/chat', methods=['POST'])
+# --- Neural Interface ---
 def chat():
     data = request.json
     user_message = data.get('message', '').lower()
