@@ -1,63 +1,80 @@
-# Moshi: The Story of a Decentralized Coding Brain
+# Moshi: Federated Architecture for Multi-Head Syntax Synthesis
 
-Moshi started with a simple question: *What if our IDEs didn't just suggest code, but actually learned the "soul" of every project they touched?*
+Moshi is a specialized, edge-optimized transformer ecosystem designed for **Autonomous Distributed Intelligence**. By implementing a federated synchronization protocol, Moshi transcends traditional IDE boundaries, transforming individual development environments into participating nodes of a global semantic network.
 
-Most AI coding assistants feel like black boxes—disconnected, gargantuan models that eat your data and give back generic templates. Moshi is different. It’s a decentralized, state-aware neural engine that lives on your machine, learns from your unique syntax, and contributes back to a global collective intelligence.
+## 🏛 Architectural Formalism
 
-## � How Moshi "Thinks"
+Moshi utilizes a **Decoder-Only Transformer** architecture optimized for character-level code synthesis. The core engine is defined by a sequence of $L$ identical blocks, each performing multi-head self-attention and non-linear transformations.
 
-At its core, Moshi isn't memorizing your files. It’s analyzing the **atomic grammar** of your project—the way you nest your HTML, the specific animations you prefer in CSS, and the async patterns you use in JS.
+### 1. Neural Compute Flow
+The synthesis process follows a strictly causal sequence:
 
-### The Neural Flow
 ```mermaid
 graph TD
-    A[User Prompt] --> B{Tokenizer}
-    B -->|Char-Level Embedding| C[Positional Encoding]
-    C --> D[Moshi Transformer Blocks]
-    D -->|Self-Attention| E[Syntax Synthesis]
-    E --> F[VFS Injection]
-    F --> G[Code Execution]
+    subgraph "N-Node Input Pipeline"
+        I[Input Prompt] --> T[Char-level Tokenizer]
+        T --> E[Embedding Space]
+        E --> PE[Sinusoidal Positional Encoding]
+    end
+
+    subgraph "Transformer Core (L=6, d_model=384)"
+        PE --> B1[Transformer Block 1]
+        B1 --> BN[... Blocks ...]
+        BN --> BL[Transformer Block L]
+    end
+
+    subgraph "Inference Head"
+        BL --> LN[LayerNorm]
+        LN --> SM[Softmax Sampling]
+        SM --> O[Synthesized Code Artifact]
+    end
 ```
 
-### The "Global Brain" Synchronization
-Moshi uses a federated learning approach. Every time it helps you solve a problem, it appends that new pattern to its local memory. When you sync, your machine votes on the future of the global model.
+### 2. The Internal Block Geometry
+Each `TransformerBlock` is a high-fidelity unit defined by:
+$$ \text{LayerNorm}(x + \text{Attention}(x)) $$
+$$ \text{LayerNorm}(x + \text{GELU}(xW_1 + b_1)W_2 + b_2) $$
 
 ```mermaid
 graph LR
-    UserA[Node 1] -- "Local Weights" --> GitHub((Central Hub))
-    UserB[Node 2] -- "Local Weights" --> GitHub
-    UserC[Node 3] -- "Local Weights" --> GitHub
-    GitHub -- "Elite Global Brain" --> UserA
-    GitHub -- "Elite Global Brain" --> UserB
-    GitHub -- "Elite Global Brain" --> UserC
+    X_in[Input X] --> Attn[Multi-Head Attention]
+    X_in --> Res1((+))
+    Attn --> Res1
+    Res1 --> Norm1[Layer Norm]
+    Norm1 --> FF[FFN: GELU Activation]
+    Norm1 --> Res2((+))
+    FF --> Res2
+    Res2 --> Norm2[Layer Norm]
+    Norm2 --> X_out[Output X]
 ```
 
-## 🛠 Tech Stack (For the Curious)
+## 🌐 Federated Learning Protocol (FL-Moshi)
 
-- **Back-end:** Python 3.10+ / Flask / PyTorch
-- **Visuals:** Inter & JetBrains Mono / Custom Monaco Theme
-- **Sync Engine:** Git-based Federated Learning Hub
-- **Syntax Engine:** Character-level Transformer with logic-based prompt mapping.
+Moshi employs a **Decentralized Parameter Synchronization** method. Local model refinements are merged into a global weight vector through a Git-based consensus hub.
 
-## � Getting Started
+### The Optimization Loop
+The objective function $\mathcal{L}$ is minimized using the **AdamW** optimizer with a **One-Cycle Learning Rate** schedule, ensuring rapid convergence on edge hardware:
 
-If you're reading this, you're likely here to build something smarter. To get the engines running:
+$$ W_{t+1} = W_t - \eta_t \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon} $$
 
-1. **Clone the Repo:**
-   ```bash
-   git clone https://github.com/aliyabuz25/Moshi.git
-   ```
-2. **Ignite the Brain:**
-   ```bash
-   python3 server.py
-   ```
-3. **The First Sync:**
-   Hit the **"Global Sync"** button in Moshi. This will pull the latest weights (`moshi_brain.pt`) and shared knowledge from the community.
+where $\eta_t$ follows the $1$-cycle trajectory, optimizing for both exploration and exploitation phases during local training sessions.
 
-## � The Roadmap
+## 🚀 Deployment & Scaling
 
-Moshi is an evolving organism. Our current focus is on **Edge-Optimization** (making it faster on every CPU) and **Zero-Shot Project Context** (understanding your whole codebase in a single blink).
+### Performance Specifications
+- **Vocab Size:** Dynamically scaled $\approx 100$ (Character-level)
+- **Sequence Context:** $384$ tokens (Edge Optimized)
+- **Floating Point:** FP32/BF16 compatible
+- **Concurrency:** Multi-threaded backend with `R/W` Model Lock
+
+### Initialization Strategy
+```bash
+git clone https://github.com/aliyabuz25/Moshi.git
+python3 server.py
+```
+
+Upon startup, the **SyncManager** initializes a cold-start pull from the Global Brain Hub, ensuring your local node is synchronized with the latest community-validated parameters.
 
 ---
-**Build with us.**  
-[Github](https://github.com/aliyabuz25/Moshi) | **Moshi Community**
+**Elite Engineering Context.**  
+[Architecture Details](https://github.com/aliyabuz25/Moshi) | **Moshi Open Research**
