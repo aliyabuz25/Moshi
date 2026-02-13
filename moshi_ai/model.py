@@ -7,18 +7,22 @@ import threading
 import math
 from torch.optim.lr_scheduler import OneCycleLR
 
+import tiktoken
+
 class Tokenizer:
-    def __init__(self, text):
-        self.chars = sorted(list(set(text)))
-        self.char_to_ix = { ch:i for i,ch in enumerate(self.chars) }
-        self.ix_to_char = { i:ch for i,ch in enumerate(self.chars) }
-        self.vocab_size = len(self.chars)
+    def __init__(self, model_name="gpt2"):
+        # Using industry-standard BPE via tiktoken
+        self.encoding = tiktoken.get_encoding(model_name)
+        self.vocab_size = self.encoding.n_vocab
 
     def encode(self, text):
-        return torch.tensor([self.char_to_ix[ch] for ch in text if ch in self.char_to_ix], dtype=torch.long)
+        return torch.tensor(self.encoding.encode(text), dtype=torch.long)
 
     def decode(self, indices):
-        return ''.join([self.ix_to_char[ix.item()] for ix in indices])
+        # Handle both tensor and list inputs
+        if torch.is_tensor(indices):
+            indices = indices.tolist()
+        return self.encoding.decode(indices)
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, max_len=1024):
@@ -87,8 +91,9 @@ def load_data(path):
     if os.path.exists(path):
         with open(path, 'r', encoding='utf-8') as f:
             dataset_content = f.read()
-        vocab = sorted(list(set(dataset_content + "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<>/=\"' !@#$%^&*()_+-=[]{};:,.\\n\\t[]")))
-        tokenizer = Tokenizer("".join(vocab))
+        
+        # Initialize the high-performance BPE tokenizer
+        tokenizer = Tokenizer("gpt2")
         return True
     return False
 
@@ -138,7 +143,11 @@ def train_loop_autonomous():
             
             optimizer.zero_grad()
             logits = model(inputs)
-            loss = F.cross_entropy(logits.reshape(-1, tokenizer.vocab_size), targets.reshape(-1))
+            # Reshape for cross_entropy: (batch * seq, vocab_size)
+            logits_flat = logits.view(-1, tokenizer.vocab_size)
+            targets_flat = targets.reshape(-1)
+            
+            loss = F.cross_entropy(logits_flat, targets_flat)
             loss.backward()
             
             # Gradient Clipping
@@ -177,24 +186,28 @@ def generate_text(instruction, max_new_tokens=256, temperature=0.5):
     
     with torch.no_grad():
         with model_lock:
-            safe_text = "".join([c if c in tokenizer.char_to_ix else " " for c in full_prompt])
-            idx = tokenizer.encode(safe_text).unsqueeze(0).to(device)
-            predicted = ""
+            # Standard BPE encoding
+            token_ids = tokenizer.encode(full_prompt).unsqueeze(0).to(device)
+            predicted_tokens = []
             
             for _ in range(max_new_tokens):
-                idx_cond = idx[:, -384:] # Match training seq_len
+                idx_cond = token_ids[:, -384:] # Maintain context window
                 logits = model(idx_cond)
                 logits = logits[:, -1, :] / temperature
                 probs = F.softmax(logits, dim=-1)
                 
                 next_token = torch.multinomial(probs, num_samples=1)
-                char = tokenizer.ix_to_char[next_token.item()]
+                token_val = next_token.item()
                 
-                if char == "[" or "[END]" in predicted: break
-                predicted += char
-                idx = torch.cat((idx, next_token), dim=1)
+                # Check for stop sequences in decoded string (common in BPE)
+                char = tokenizer.decode([token_val])
+                if "[" in char or "[END]" in char: break
+                
+                predicted_tokens.append(token_val)
+                token_ids = torch.cat((token_ids, next_token), dim=1)
             
-            global total_tokens_processed
-            total_tokens_processed += len(idx[0])
+            predicted_text = tokenizer.decode(predicted_tokens)
+            
+            total_tokens_processed += len(token_ids[0])
                 
-    return predicted.replace("[END]", "").strip(), len(idx[0])
+    return predicted_text.replace("[END]", "").strip(), len(token_ids[0])

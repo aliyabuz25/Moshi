@@ -32,14 +32,15 @@ graph TD
 
 ## 🧠 Neural Core Spec: `moshi_ai/model.py`
 
-The heart of Moshi is a character-level decoder-only transformer. We opted for char-level tokenization to ensure maximum granularity for code syntax, where every semicolon and bracket carries structural weight.
+The heart of Moshi is a sub-word transformer powered by **Byte-Pair Encoding (BPE)**. We migrated from character-level mapping to `tiktoken` (GPT-2 encoding) to ensure high semantic density and efficient code compression.
 
 ### `class MoshiTransformer(nn.Module)`
-The master neural container. Built with 6 layers of multi-head self-attention.
+The master neural container. Built with 6 layers of multi-head self-attention, now handling a high-dimensional sub-word vocabulary.
+- **Vocabulary Size ($V$)**: 50,257 (Standard BPE)
 - **Dimensions ($d_{model}$)**: 384
 - **Heads ($H$)**: 8
 - **FFN Width ($d_{ff}$)**: 1024
-- **Max Context**: 768 tokens (optimized for edge memory footprints)
+- **Max Context**: 768 tokens (Sub-word density allows for 3-4x more code in the same window)
 
 **Mathematical Step-through:**
 For each block $B_i$, the following residuals are computed:
@@ -47,9 +48,9 @@ For each block $B_i$, the following residuals are computed:
 2. **Feed-Forward**: $x'' = x' + \text{FFN}(\text{LayerNorm}(x'))$
 
 ### `class Tokenizer`
-A state-aware character encoder.
-- **`encode(text)`**: Maps raw UTF-8 characters to long-tensor indices using a dynamically generated vocabulary $(V)$.
-- **`decode(indices)`**: Reconstructs the synthesis back into human-readable code.
+A high-performance BPE wrapper based on `tiktoken`.
+- **`encode(text)`**: Converts raw code into sub-word tokens. Common keywords like `const`, `function`, and `return` are treated as single semantic units.
+- **`decode(indices)`**: Seamlessly reconstructs code from the sub-word latent space.
 
 ---
 
