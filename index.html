@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoshiIDE - Powered by Moshi-v1</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/microsoft-run-codicons/0.0.32/codicon.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        .gutter {
+            background-color: transparent;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            z-index: 10;
+        }
+
+        .gutter.gutter-horizontal {
+            cursor: col-resize;
+            width: 4px;
+        }
+
+        .gutter:hover {
+            background-color: #3794ff;
+            transition: 0.2s;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Activity Bar -->
+        <aside class="activity-bar">
+            <div class="action-item active" title="Explorer">
+                <i class="codicon codicon-files"></i>
+            </div>
+            <div class="action-item" title="Search">
+                <i class="codicon codicon-search"></i>
+            </div>
+            <div class="action-item" title="Source Control">
+                <i class="codicon codicon-source-control"></i>
+            </div>
+            <div class="spacer"></div>
+            <div class="action-item ai-chat-toggle" id="ai-chat-toggle" title="Moshi-v1 AI">
+                <i class="codicon codicon-sparkle"></i>
+            </div>
+            <div class="action-item" title="Settings">
+                <i class="codicon codicon-settings-gear"></i>
+            </div>
+        </aside>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span>Explorer</span>
+                <div class="sidebar-actions">
+                    <button class="open-folder-btn" id="open-folder-btn">
+                        <i class="codicon codicon-folder-opened"></i> Open
+                    </button>
+                    <i class="codicon codicon-new-file" id="new-file-btn" title="New File"></i>
+                </div>
+            </div>
+            <div class="sidebar-content" id="file-explorer">
+                <!-- File Tree -->
+            </div>
+            <!-- Credits Footer in Sidebar -->
+            <div class="sidebar-footer">
+                Moshi v1.0.0
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-split">
+            <!-- AI Panel (Hidden by default) -->
+            <div class="ai-panel" id="ai-panel">
+                <div class="ai-header">
+                    <span>Moshi-v1</span>
+                    <span style="font-size: 10px; color: #666; margin-left: auto;">v1.0.0</span>
+                </div>
+                <div class="ai-content">
+                    <div id="chat-history">
+                        <div class="chat-msg system">
+                            <strong>Moshi</strong><br>
+                            Moshi-v1 Autonomous Brain is active.<br>
+                            Start the backend server to enable full intelligence.<br>
+                            <code>python3 server.py</code>
+                        </div>
+                    </div>
+                    <div class="ai-input-area">
+                        <textarea id="chat-input" class="ai-input"
+                            placeholder="Ask Moshi (e.g., 'create simple website')..." rows="1"></textarea>
+                        <div class="ai-controls">
+                            <div class="ai-context-wrapper">
+                                <i class="codicon codicon-file-symlink-file"></i>
+                                <select id="ai-context-file">
+                                    <option value="">No context</option>
+                                </select>
+                            </div>
+                            <div class="ai-model-wrapper">
+                                <select id="ai-model-select">
+                                    <option value="moshi-v1">Moshi-v1</option>
+                                </select>
+                            </div>
+                            <button id="global-sync-btn" class="ai-sync-btn" title="Sync with Global Brain">
+                                <i class="codicon codicon-cloud-download"></i> Sync
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Area -->
+            <div class="editor-area">
+                <div class="tabs-container" id="tabs-container"></div>
+                <div class="breadcrumbs" id="breadcrumbs"><span>No file open</span></div>
+                <div id="monaco-container" class="monaco-container"></div>
+            </div>
+        </main>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-left">
+                <div class="status-item"><i class="codicon codicon-remote"></i> Moshi-v1</div>
+                <div class="status-item" id="moshi-brain-status">Moshi: Initializing...</div>
+                <div class="status-item"><i class="codicon codicon-source-control"></i> main*</div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">OSS Community</div>
+                <div class="status-item" id="cursor-position">Ln 1, Col 1</div>
+                <div class="status-item" id="language-mode">Plain Text</div>
+                <div class="status-item"><i class="codicon codicon-bell"></i></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Context Menu -->
+    <div id="context-menu" class="context-menu">
+        <div class="menu-item" id="ctx-new-file">New File</div>
+        <div class="menu-item" id="ctx-rename">Rename <span class="shortcut">F2</span></div>
+        <div class="menu-item" id="ctx-delete" style="color: #f48771;">Delete <span class="shortcut">Del</span></div>
+        <div class="menu-separator"></div>
+        <div class="menu-item">Copy</div>
+        <div class="menu-item">Paste</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
